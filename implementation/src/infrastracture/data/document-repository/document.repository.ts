@@ -20,11 +20,21 @@ export class DocumentRepository {
     }).execute(); 
     return document;
   }
-  // async update(document: Document): Promise<Document> {
-  //   const index = this.documents.findIndex((d) => d.id === document.id);
-  //   this.documents[index] = document;
-  //   return document;
-  // }
+  async updateContent(id: number, content: string | null, name: string | null): Promise<void> {
+    // Here validate shit so we dont override it to null for no reason
+    if (content === null && name === null) return;
+    await this.db.updateTable('documents')
+    .$if(content !== undefined, (qb) => qb.set('content',content))
+    .$if(name !== undefined, (qb) => qb.set('name', name))
+    .where('id', '=', id)
+    .execute();
+  }
+  async assignUserToDocument(userId: number, documentId: number): Promise<void> {
+    await this.db.updateTable('documents')
+    .set('assignedUserId', userId)
+    .where('id', '=', documentId)
+    .execute();
+  }
   async delete(id: number): Promise<void> {
     await this.db.deleteFrom('documents').where('id', '=', id).execute();
   }

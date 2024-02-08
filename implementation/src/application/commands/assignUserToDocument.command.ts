@@ -1,3 +1,3 @@
 export class AssignUserToDocumentCommand {
- constructor(public readonly userId: string, public readonly documentId: string) {}
+ constructor(public readonly userId: number, public readonly documentId: number) {}
 }

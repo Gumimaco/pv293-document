@@ -7,3 +7,13 @@ export class CreateDocumentRequest {
 export class DeleteDocumentRequest {
   documentId: number;
 }
+
+export class AssignUserToDocumentRequest {
+  userId: number;
+  documentId: number;
+}
+
+export class MoodifyDocumentRequest {
+  name: string | null;
+  content: string | null;
+}
