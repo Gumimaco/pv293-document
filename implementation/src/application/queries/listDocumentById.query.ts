@@ -1,3 +1,3 @@
 export class ListDocumentByIdQuery {
-  constructor(public readonly documentId: string) {}
+  constructor(public readonly documentId: number) {}
 }

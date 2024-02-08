@@ -1,3 +1,3 @@
 export class DeleteDocumentCommand {
-  constructor(public readonly documentId: string) {}
+  constructor(public readonly documentId: number) {}
 }

@@ -13,12 +13,12 @@ export class DocumentService {
   async createDocument(newDocument: CreateDocumentRequest) {
     const document: Document = {
       ...newDocument,
-      id: '1',
+      id: Math.floor(Math.random() * 1000),
       createdAt: new Date(),
-      updatedAt: new Date(),
-      deletedAt: new Date(),
+      updatedAt: null,
+      deletedAt: null,
     };
-    return this.commandBus.execute(new CreateDocumentCommand(document));
+    return await this.commandBus.execute(new CreateDocumentCommand(document));
   }
   async getDocuments() {
     return await this.queryBus.execute(new ListDocumentsQuery());

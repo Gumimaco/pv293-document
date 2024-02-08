@@ -1,10 +1,10 @@
 export class Document {
-  id: string;
+  id: number;
   name: string;
-  companyId: string;
-  assignedUsersId: string[];
+  companyId: number;
+  assignedUserId: number | null;
   content: string;
   createdAt: Date;
-  updatedAt: Date;
-  deletedAt: Date;
+  updatedAt: Date | null;
+  deletedAt: Date | null;
 }
