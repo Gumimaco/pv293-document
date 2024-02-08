@@ -1,0 +1,34 @@
+version: '3.1'
+
+services:
+  db:
+    image: postgres:alpine
+    ports:
+      - "5432:5432"
+    restart: always
+    env_file:
+      - ./apps/api/.env.docker
+    volumes:
+      - db-data:/var/lib/postgresql/data
+  api:
+    container_name: nesttimetracker
+    build:
+      context: .
+      dockerfile: ./apps/api/Dockerfile
+    ports:
+      - 3000:3000
+    env_file:
+      - ./apps/api/.env.docker
+    environment:
+      - DATABASE_URL=postgres://postgressu:postgrespwd@db:5432/nesttimetracker 
+    volumes:
+      - app-data:/app
+    restart: on-failure
+
+networks:
+  turbo-network:
+    driver: bridge
+
+volumes:
+  db-data:
+  app-data:
