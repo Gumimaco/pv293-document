@@ -13,4 +13,4 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Document Service
-      run: docker build ./implementation --file Dockerfile --tag my-image-name:$(date +%s)
+      run: docker build ./implementation -t document-service-image

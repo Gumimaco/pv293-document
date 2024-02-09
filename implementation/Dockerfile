@@ -1,8 +1,3 @@
-# MULTISTAGE BUILD -> MALY IMAGE
-# RYCHLO NAKOPIROVAL
-# LOAD MASINA NASKOCILA CO NAJRYCHLEJSIE AK MAM SCALING!!
-
-# ALPINE -> potreba C libky -> toto je small image
 FROM node:18-alpine AS base
 RUN apk add --no-cache libc6-compat
 ENV PNPM_HOME="/pnpm"
