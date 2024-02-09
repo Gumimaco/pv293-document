@@ -3,32 +3,36 @@ version: '3.1'
 services:
   db:
     image: postgres:alpine
+    hostname: db
     ports:
       - "5432:5432"
     restart: always
-    env_file:
-      - ./apps/api/.env.docker
-    volumes:
-      - db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_HOST=db
+      - POSTGRES_PASSWORD=postgrespwd
+      - POSTGRES_USER=postgressu
+      - POSTGRES_DB=documentservice
+    networks:
+      - mynet
+
   api:
-    container_name: nesttimetracker
+    container_name: document-service
     build:
       context: .
-      dockerfile: ./apps/api/Dockerfile
+      dockerfile: ./Dockerfile
     ports:
       - 3000:3000
+    depends_on:
+      - db
     env_file:
-      - ./apps/api/.env.docker
+      - ./.env.docker
     environment:
-      - DATABASE_URL=postgres://postgressu:postgrespwd@db:5432/nesttimetracker 
-    volumes:
-      - app-data:/app
+      - DATABASE_URL=postgres://postgressu:postgrespwd@db:5432/documentservice
     restart: on-failure
+    networks:
+      - mynet
 
 networks:
-  turbo-network:
-    driver: bridge
+  mynet:
+    name: my-shared-db-network
 
-volumes:
-  db-data:
-  app-data:

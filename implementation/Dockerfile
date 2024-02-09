@@ -9,48 +9,28 @@ ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 
-# vsetko od seba tam nakopirujem a pridam turbo globalny prikaz
-# turbo prune --scope vymaze vsetko okrem toho co je vo scopu
-FROM base AS builder
+FROM base AS dependencies
+
 WORKDIR /app
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm add turbo --global
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install
+
+FROM base AS build
+
+WORKDIR /app
 COPY . .
-RUN turbo prune --scope=api --docker
+COPY --from=dependencies /app/node_modules ./node_modules
+RUN pnpm build
+RUN pnpm prune --prod
 
-# nakopiruje subory a nainstaluje zavyslosti
-# toto je cache --mount=type=cache,id=pnpm,target=/pnpm/store aby tie prikazy bezali rychlejsie!!
-# bude fungovat aj bez toho len pomalsie o kusok
-FROM base AS installer
+FROM base AS deploy
+
 WORKDIR /app
-RUN SHELL=bash pnpm setup
-COPY .gitignore .gitignore
-COPY --from=builder /app/out/json .
-COPY --from=builder /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+COPY --from=build /app/dist/ ./dist/
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/entrypoint.sh ./entrypoint.sh
 
+RUN chmod +x ./entrypoint.sh
 
-# Klasicky build
-COPY --from=builder /app/out/full .
-COPY turbo.json turbo.json
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm exec turbo run build --filter=api
-
-# PNPM Linky na node modules -> do vyslednej veci sa vymazu a hard nakopiruju do apky DOLEZITE
-FROM installer as deployer
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm --filter=api --prod deploy apps/api
-
-
-
-#
-FROM base AS runner
-WORKDIR /app
-
-# POD USEROM
-RUN addgroup --system --gid 1001 nest
-RUN adduser --system --uid 1001 nest
-
-COPY --from=deployer --chown=nest:nest /app/apps/api/node_modules ./node_modules
-COPY --from=installer --chown=nest:nest /app/apps/api/dist ./dist
-
-USER nest
-
-CMD node /app/dist/main.js
+ENTRYPOINT [ "./entrypoint.sh" ]
+CMD [ "node", "dist/main.js" ]
