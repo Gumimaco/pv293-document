@@ -13,7 +13,7 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "k6 run tests/test.js",
+    "test": "k6 run --vus 200 --duration 10s tests/test.js",
     "db:migrate": "ts-node ./src/infrastracture/db/migrations.ts",
     "db:schema": "kysely-codegen --out-file ./src/infrastracture/db/schema.ts"
   },

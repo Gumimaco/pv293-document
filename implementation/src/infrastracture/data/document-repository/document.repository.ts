@@ -22,12 +22,10 @@ export class DocumentRepository {
   }
   async updateContent(id: number, content: string | null, name: string | null): Promise<void> {
     // Here validate shit so we dont override it to null for no reason
-    if (content === null && name === null) return;
-    await this.db.updateTable('documents')
-    .$if(content !== undefined, (qb) => qb.set('content',content))
-    .$if(name !== undefined, (qb) => qb.set('name', name))
-    .where('id', '=', id)
-    .execute();
+    const query = this.db.updateTable('documents')
+    .set({content, name})
+    .where('id','=',id)
+    await query.executeTakeFirst()
   }
   async assignUserToDocument(userId: number, documentId: number): Promise<void> {
     await this.db.updateTable('documents')

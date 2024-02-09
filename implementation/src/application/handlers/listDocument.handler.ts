@@ -10,6 +10,6 @@ export class ListDocumentHandler
   constructor(private readonly documentRepository: DocumentRepository) {}
 
   async execute(command: ListDocumentByIdQuery) {
-    return await this.documentRepository.findById(command.documentId);
+    return await this.documentRepository.findById(command.id);
   }
 }

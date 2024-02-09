@@ -27,7 +27,7 @@ export class DocumentController {
   async createDocument(@Body() newDocument: CreateDocumentRequest) {
     const document: Document = {
       ...newDocument,
-      id: Math.floor(Math.random() * 1000),
+      id: Math.floor(Math.random() * 100000),
       createdAt: new Date(),
       updatedAt: null,
       deletedAt: null,
